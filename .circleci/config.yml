@@ -7,13 +7,15 @@ build_go: &build_go
     - run:
         name: Build Image
         command: |
-          docker image build -t $CIRCLE_PROJECT_USERNAME/gox-build:$CIRCLE_BRANCH-$GO_TAG -f Dockerfile-$GO_TAG .
+          docker image build -t $CIRCLE_PROJECT_USERNAME/gox-build:develop -f Dockerfile-$GO_TAG .
     - deploy:
         name: Push to Docker Hub
         command: |
-          if [ "$CIRCLE_BRANCH" == "$CIRCLE_TAG" ]; then
+          if [ ! -z "$CIRCLE_TAG" ]; then
             docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
-            docker push $CIRCLE_PROJECT_USERNAME/gox-build:$CIRCLE_BRANCH-$GO_TAG
+            OUTPUT_IMAGE=$CIRCLE_PROJECT_USERNAME/gox-build:$CIRCLE_TAG-$GO_TAG
+            docker tag $CIRCLE_PROJECT_USERNAME/gox-build:develop $OUTPUT_IMAGE
+            docker push $OUTPUT_IMAGE
           fi
 
 version: 2
