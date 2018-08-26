@@ -1,0 +1,17 @@
+FROM golang:1.11rc2-alpine3.8
+
+RUN apk add --no-cache git musl-dev gcc
+RUN go get github.com/mitchellh/gox
+
+LABEL version="1.0.0"
+
+COPY run.sh /usr/local/bin/run.sh
+RUN chmod +x /usr/local/bin/run.sh
+
+VOLUME [ "/src" ]
+WORKDIR /src
+
+ENTRYPOINT [ "run.sh" ]
+
+
+
