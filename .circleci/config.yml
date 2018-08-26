@@ -1,22 +1,19 @@
 build_go: &build_go
   docker:
     - image: docker:18.06.1-ce-git
-  environment:
-    FULL_IMAGE: $CIRCLE_PROJECT_USERNAME/gox-build:$CIRCLE_BRANCH-$GO_TAG
-    DOCKERFILE: Dockerfile-$GO_TAG
   steps:
     - checkout
     - setup_remote_docker
     - run:
         name: Build Image
         command: |
-          docker image build -t $FULL_IMAGE -f $DOCKERFILE
+          docker image build -t $CIRCLE_PROJECT_USERNAME/gox-build:$CIRCLE_BRANCH-$GO_TAG -f Dockerfile-$GO_TAG .
     - deploy:
         name: Push to Docker Hub
         command: |
           if [ "$CIRCLE_BRANCH" == "$CIRCLE_TAG" ]; then
             docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
-            docker push $FULL_IMAGE
+            docker push $CIRCLE_PROJECT_USERNAME/gox-build:$CIRCLE_BRANCH-$GO_TAG
           fi
 
 version: 2
